@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="OrcNotes é um bloco de notas online para você organizar suas ideias, tarefas e metas. Organize suas notas de maneira prática e com simplicidade.">
+        <meta name="keywords" content="notas, blocos de notas, organização, tarefas, metas, orcnotes">
+        <meta property="og:title" content="OrcNotes - Bloco de Notas Online">
+        <meta property="og:description" content="Organize suas ideias e tarefas de forma prática e limpa com OrcNotes, o bloco de notas online.">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://">
+        <meta name="language" content="pt-br">
+        <title>OrcNotes</title>
+        <link rel="stylesheet" href="styles.css">
+        <script defer src="script.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <img src="img/orc.png" alt="OrcNotes Logo" style="height: 50px;">
+            </div>
+            <h1>OrcNotes</h1>
+            <button id="toggle-theme" class="theme-button">🌞 Modo Escuro</button>
+        </header>
+        <main>
+            <input type="text" id="note-title" placeholder="Título da Nota" maxlength="50">
+            <select id="sticker-selector">
+                <option value="">Escolha um Selo</option>
+                <option value="unicornio" style="background-image: url('img/unicornio.png'); background-repeat: no-repeat; background-position: left center;">Pessoal</option>
+                <option value="lenhador" style="background-image: url('img/lenhador.png'); background-repeat: no-repeat; background-position: left center;">Trabalho</option>
+                <option value="socrates" style="background-image: url('img/socrates.png'); background-repeat: no-repeat; background-position: left center;">Estudo</option>
+                <option value="orcs" style="background-image: url('img/orcs.png'); background-repeat: no-repeat; background-position: left center;">Importante</option>
+                <option value="ciclope" style="background-image: url('img/ciclope.png'); background-repeat: no-repeat; background-position: left center;">Problema</option>
+                <option value="cerveja" style="background-image: url('img/cerveja.png'); background-repeat: no-repeat; background-position: left center;">Comemoração</option>
+                <option value="manuscrito" style="background-image: url('img/manuscrito.png'); background-repeat: no-repeat; background-position: left center;">Meta</option>
+                <option value="ouro" style="background-image: url('img/ouro.png'); background-repeat: no-repeat; background-position: left center;">Financeiro</option>
+            </select>
+            <textarea id="note" placeholder="Grr... Digite suas anotações aqui..."></textarea>
+            <div class="buttons">
+                <button id="save-note">Salvar no Site</button>
+                <button id="download-note">Baixar Nota</button>
+            </div>
+            <div id="notification" class="notification"></div>
+            <section id="saved-notes" class="saved-notes">
+                <h2>Notas Salvas</h2>
+                <ul id="notes-list"></ul>
+            </section>
+
+        </main>
+        <footer>
+            <p>Copyright © 2024 Jackoffee. Todos os direitos reservados.</p>
+        </footer>
+    </div>
+</body>
+</html>
+
+<style>
+#sticker-selector {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: var(--bg-color-light);
+    color: var(--text-color-light);
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zY2hlbWFzL3htbC9zdmcxIj4KPHBhdGggZD0iTTE0LjggOC42N0wwIDExLjMiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSI1IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg=='); 
+    background-position: right 10px center;  
+    background-repeat: no-repeat;
+    background-size: 12px 12px;
+}
+
+#sticker-selector:focus {
+    outline: none;
+    border-color: #6200ee;
+    background-color: #f1f1f1;
+}
+
+#sticker-selector option {
+    padding: 10px;
+    font-size: 1rem;
+    background-color: var(--bg-color-light);
+    color: var(--text-color-light);
+}
+
+[data-theme="dark"] #sticker-selector {
+    background-color: var(--bg-color-dark);
+    color: var(--text-color-dark);
+    border-color: #444;
+}
+
+[data-theme="dark"] #sticker-selector option {
+    background-color: var(--bg-color-dark);
+    color: var(--text-color-dark);
+}
+
+#sticker-selector option:hover {
+    background-color: #e0e0e0;
+    color: #6200ee;
+}
+
+#sticker-selector::-ms-expand {
+    display: none;
+}
+
+
+
+    :root {
+        --bg-color-light: #f9f9f9;
+        --text-color-light: #2c2c2c;
+        --bg-color-dark: #1e1e1e;
+        --text-color-dark: #f9f9f9;
+        --button-bg: #6200ee;
+        --button-hover: #3700b3;
+        --button-text: #ffffff;
+        --notification-bg: #4caf50;
+        --notification-text: #ffffff;
+    }
+
+    [data-theme="light"] {
+        background-color: var(--bg-color-light);
+        color: var(--text-color-light);
+    }
+
+    [data-theme="dark"] {
+        background-color: var(--bg-color-dark);
+        color: var(--text-color-dark);
+    }
+
+    body {
+        margin: 0;
+        font-family: 'Arial', sans-serif;
+        transition: background-color 0.3s, color 0.3s;
+        overflow-x: hidden;
+    }
+
+    .app-container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        padding: 1rem;
+        box-sizing: border-box;
+        max-width: 100%;
+    }
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+    }
+
+    .theme-button {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        border: none;
+        border-radius: 4px;
+        background-color: var(--button-bg);
+        color: var(--button-text);
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .theme-button:hover {
+        background-color: var(--button-hover);
+    }
+
+    input#note-title {
+        width: 100%;
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        font-size: 1.2rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    textarea {
+        flex-grow: 1;
+        width: 100%;
+        height: 300px;
+        resize: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 1rem;
+        font-size: 1rem;
+        background-color: var(--bg-color-light);
+        color: var(--text-color-light);
+        transition: background-color 0.3s, color 0.3s;
+        box-sizing: border-box;
+    }
+
+    [data-theme="dark"] textarea {
+        background-color: var(--bg-color-dark);
+        color: var(--text-color-dark);
+    }
+
+    .buttons {
+        margin-top: 1rem;
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    button {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+        background-color: var(--button-bg);
+        color: var(--button-text);
+        transition: background-color 0.3s;
+    }
+
+    button:hover {
+        background-color: var(--button-hover);
+    }
+
+    .notification {
+        margin-top: 1rem;
+        padding: 0.5rem;
+        background-color: var(--notification-bg);
+        color: var(--notification-text);
+        text-align: center;
+        border-radius: 4px;
+        display: none;
+    }
+
+    .saved-notes {
+        margin-top: 2rem;
+    }
+
+    .saved-notes ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .saved-notes li {
+        padding: 0.5rem;
+        border-bottom: 1px solid #ccc;
+        cursor: pointer;
+    }
+
+    footer {
+        margin-top: auto;
+        text-align: center;
+        padding: 1rem 0;
+        font-size: 0.9rem;
+        color: var(--text-color-light);
+    }
+
+    [data-theme="dark"] footer {
+        color: var(--text-color-dark);
+    }
+
+    @media (max-width: 768px) {
+        header {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        textarea {
+            height: 200px;
+        }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const textarea = document.getElementById('note');
+    const noteTitle = document.getElementById('note-title');
+    const stickerSelector = document.getElementById('sticker-selector');
+    const toggleThemeButton = document.getElementById('toggle-theme');
+    const saveNoteButton = document.getElementById('save-note');
+    const downloadNoteButton = document.getElementById('download-note');
+    const notification = document.getElementById('notification');
+    const notesList = document.getElementById('notes-list');
+
+    const stickers = {
+        unicornio: { icon: 'img/unicornio.png', name: 'Pessoal: Magia Particular' },
+        lenhador: { icon: 'img/lenhador.png', name: 'Trabalho: Ofício Feudal' },
+        socrates: { icon: 'img/socrates.png', name: 'Estudo: Conhecimento Empírico' },
+        orcs: { icon: 'img/orcs.png', name: 'Importante: Hierarquia Primordial' },
+        ciclope: { icon: 'img/ciclope.png', name: 'Problema: Estorvo Profano' },
+        cerveja: { icon: 'img/cerveja.png', name: 'Comemoração: Triunfo Abissal' },
+        manuscrito: { icon: 'img/manuscrito.png', name: 'Meta: Intento Proximal' },
+        ouro: { icon: 'img/ouro.png', name: 'Financeiro: Pecuniário Imperial' }
+    };
+
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    document.body.setAttribute('data-theme', currentTheme);
+    toggleThemeButton.textContent = currentTheme === 'light' ? '🌙 Modo Escuro' : '🌞 Modo Claro';
+
+    toggleThemeButton.addEventListener('click', () => {
+        const newTheme = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        document.body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        toggleThemeButton.textContent = newTheme === 'light' ? '🌙 Modo Escuro' : '🌞 Modo Claro';
+    });
+
+    saveNoteButton.addEventListener('click', () => {
+        const note = {
+            title: noteTitle.value,
+            content: textarea.value,
+            sticker: stickerSelector.value
+        };
+
+        downloadNoteButton.addEventListener('click', () => {
+    const note = {
+        title: noteTitle.value,
+        content: textarea.value,
+        sticker: stickerSelector.value
+    };
+
+    if (!note.title || !note.content) {
+        displayNotification('Grr... A nota precisa ter título e conteúdo!');
+        return;
+    }
+
+    const noteContent = `Título: ${note.title}\n\n${note.content}\n\nSelo: ${stickers[note.sticker]?.name || 'Nenhum Selo'}`;
+
+    const blob = new Blob([noteContent], { type: 'text/plain' });
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${note.title || 'Nota'}.txt`;
+    link.click();
+});
+
+
+        let savedNotes = JSON.parse(localStorage.getItem('savedNotes')) || [];
+        const existingIndex = savedNotes.findIndex(n => n.title === note.title);
+
+        if (existingIndex !== -1) {
+            savedNotes[existingIndex] = note;
+        } else {
+            savedNotes.push(note);
+        }
+
+        localStorage.setItem('savedNotes', JSON.stringify(savedNotes));
+
+        displayNotification('Grr... Nota salva com sucesso!');
+        loadSavedNotes();
+
+        noteTitle.value = '';
+        textarea.value = '';
+        stickerSelector.value = '';
+    });
+
+    function deleteNote(index) {
+        let savedNotes = JSON.parse(localStorage.getItem('savedNotes')) || [];
+        savedNotes.splice(index, 1);
+        localStorage.setItem('savedNotes', JSON.stringify(savedNotes));
+        loadSavedNotes();
+        displayNotification('Grr... Nota excluída com sucesso!');
+    }
+
+    function loadSavedNotes() {
+        const savedNotes = JSON.parse(localStorage.getItem('savedNotes')) || [];
+        notesList.innerHTML = '';
+        savedNotes.forEach((note, index) => {
+            const listItem = document.createElement('li');
+            listItem.textContent = note.title || `Nota ${index + 1}`;
+
+            if (note.sticker) {
+                const sticker = stickers[note.sticker];
+                const stickerIcon = document.createElement('img');
+                stickerIcon.src = sticker.icon;
+                stickerIcon.alt = sticker.name;
+                stickerIcon.style.width = '20px';
+                stickerIcon.style.marginRight = '10px';
+
+                listItem.prepend(stickerIcon);
+            }
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Excluir';
+            deleteButton.style.marginLeft = '10px';
+            deleteButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteNote(index);
+            });
+
+            listItem.appendChild(deleteButton);
+
+            listItem.addEventListener('click', () => {
+                noteTitle.value = note.title;
+                textarea.value = note.content;
+                stickerSelector.value = note.sticker;
+            });
+
+            notesList.appendChild(listItem);
+        });
+    }
+
+    function displayNotification(message) {
+        notification.textContent = message;
+        notification.style.display = 'block';
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 2000);
+    }
+
+    loadSavedNotes();
+});
+</script>
